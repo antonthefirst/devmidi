@@ -32,7 +32,7 @@ The header should be pretty self explanatory. Functions with a 'twister' prefix 
 * Use `twisterSliderClickToggle` to quickly jump between the provided min and max values (in addition to tuning between them).
 * Use `twisterColorEdit` to edit colors. In HSV mode, the hue will wrap. 
 * Use `fighterRadioButton` with multiple buttons to quickly toggle options.
-* Use `fighterCheckboxMomentary` to enable a checkbox only when a button is held down. Useful for momentarily turning on a visualization, rather than toggling it on.
+* Use `fighterCheckboxMomentary` to enable a checkbox only when a button is held down. Useful for momentarily turning on a visualization to quickly check for problems, rather than toggling it on permanently.
 
 ## "Architecture"
 The library is actually in two pieces: the device specific API that is **devmidi.h/cpp**, and the underlying device agnostic **midi_wrap.h/cpp which** just listens on the devices and wrangles the output into a convenient format. Right now, it only listens for Continuous Controller and Note messages, since that's what I've found to be useful. This breakdown abstracts the bits of MIDI that I care about and makes it easier to add binds for new devices.
@@ -46,6 +46,7 @@ The devmidi layer is meant to be hacked on so you can quickly add your own parti
 ## Which controller should I get?
 I get asked sometimes which controllers are best for this sort of workflow.
 I am not at all affiliated with Midi Fighter or DJ Tech Tools, but I've personally found their devices to be the best so far. I'm always on the lookout for new ones :)
+
 Here are some criteria to consider:
 * Absolute vs Relative Knobs - **This is the most important point:** I much prefer **endless** knobs that output **relative** values for this work. You almost certainly will want relative because you never know what value your app starts at, and you don't want to 'sync' your controller to those values. On the flipside, you don't want values you 'left' on your controller to be the 'defaults' for your app (the next day after tuning, you will forget that knob9 controlling brightness was left at 0.72 and be very confused that your screen seems 'a bit dark for some reason?'). You also don't want to have to deal with 'pickup' or 'syncing' for bounded knobs, best to just let it spin (the twister can be configured into absolute or relative, and has LED display for bounds, so in theory you can sync to them if you feel like it). Motorized knobs solve some of these issues, but they're extremely expensive for this niche usecase. Also with endless relative knobs you can easily control unbounded values like log-scale.
 * Knob encoder precision - You want the best obviously, but this directly impacts price (the twister has good bang-for-buck encoders). Lower precision encoder means that you have to turn the knob a lot more to cover a broader range with the same accuracy, which can get really tedious.
