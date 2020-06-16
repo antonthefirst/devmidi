@@ -54,10 +54,10 @@ static bool Down(MIDIState* curr, MIDIState* prev, int button) {
 	return curr->note_ons[button] > prev->note_offs[button];
 }
 static bool ButtonPress(const char* id, MIDIState* curr, MIDIState* prev, int button) {
-	return gui::Button(id) || Press(curr, prev, button);
+	return ImGui::Button(id) || Press(curr, prev, button);
 }
 static bool ButtonRelease(const char* id, MIDIState* curr, MIDIState* prev, int button) {
-	return gui::Button(id) || Release(curr, prev, button);
+	return ImGui::Button(id) || Release(curr, prev, button);
 }
 static bool RadioButton(const char* id, MIDIState* curr, MIDIState* prev, int button, int* v, int v_button) {
 	bool touched = false;
@@ -65,7 +65,7 @@ static bool RadioButton(const char* id, MIDIState* curr, MIDIState* prev, int bu
 		*v = v_button;
 		touched = true;
 	}
-	return gui::RadioButton(id, v, v_button) || touched;
+	return ImGui::RadioButton(id, v, v_button) || touched;
 }
 static bool Checkbox(const char* id, MIDIState* curr, MIDIState* prev, int button, bool* v) {
 	bool touched = false;
@@ -73,7 +73,7 @@ static bool Checkbox(const char* id, MIDIState* curr, MIDIState* prev, int butto
 		*v = !*v;
 		touched = true;
 	}
-	return gui::Checkbox(id, v) | touched;
+	return ImGui::Checkbox(id, v) | touched;
 }
 static bool CheckboxMomentary(const char* id, MIDIState* curr, MIDIState* prev, int button, bool* v) {
 	bool touched = false;
@@ -81,7 +81,7 @@ static bool CheckboxMomentary(const char* id, MIDIState* curr, MIDIState* prev, 
 		*v = !*v;
 		touched = true;
 	}
-	return gui::Checkbox(id, v) | touched;
+	return ImGui::Checkbox(id, v) | touched;
 }
 static bool SliderFloat(const char* id, MIDIState* curr, MIDIState* prev, int knob, float* v, float v_min, float v_max, const char* format, float power) {
 	float knob_scale = 1.0f / 100.0f;
@@ -97,32 +97,32 @@ static bool SliderFloat(const char* id, MIDIState* curr, MIDIState* prev, int kn
 	linear_v = min(v_max, max(v_min, linear_v + del * knob_scale));
 	*v = power == 1.0f ? linear_v : powf(linear_v, power);
 
-	return gui::SliderFloat(id, v, v_min, v_max, format, power) || del != 0;
+	return ImGui::SliderFloat(id, v, v_min, v_max, format, power) || del != 0;
 }
 static bool SliderFloatN(int components, const char* id, MIDIState* curr, MIDIState* prev, const int* knobs, float* v, const float* v_defaults, float v_min, float v_max, const char* format, float power) {
-	gui::BeginGroup();
-	gui::PushID(id);
-	gui::PushItemWidth(gui::CalcItemWidth() / components);
-	gui::PushStyleVar(ImGuiStyleVar_ItemSpacing, gui::GetStyle().ItemInnerSpacing);
+	ImGui::BeginGroup();
+	ImGui::PushID(id);
+	ImGui::PushItemWidth(ImGui::CalcItemWidth() / components);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImGui::GetStyle().ItemInnerSpacing);
 	bool touched = false;
 	for (int i = 0; i < components; ++i) {
-		gui::PushID(i);
+		ImGui::PushID(i);
 		touched |= SliderFloat("", curr, prev, knobs[i], v + i, v_min, v_max, format, power);
-		gui::SameLine();
+		ImGui::SameLine();
 		if (v_defaults) {
 			if (ButtonRelease("def", curr, prev, knobs[i])) {
 				v[i] = v_defaults[i];
 				touched = true;
 			}
-			gui::SameLine();
+			ImGui::SameLine();
 		}
-		gui::PopID();
+		ImGui::PopID();
 	}
-	gui::Text(id);
-	gui::PopStyleVar();
-	gui::PopItemWidth();
-	gui::PopID();
-	gui::EndGroup();
+	ImGui::Text(id);
+	ImGui::PopStyleVar();
+	ImGui::PopItemWidth();
+	ImGui::PopID();
+	ImGui::EndGroup();
 	return touched;
 }
 static void Print(int components, const char* id, MIDIState* curr, MIDIState* prev, const int* knobs, float* v, const char* format) {
@@ -141,7 +141,7 @@ static void Print(int components, const char* id, MIDIState* curr, MIDIState* pr
 		}
 		DEVMIDI_PRINT(buff);
 		DEVMIDI_PRINT("\n");
-		gui::SetClipboardText(buff);
+		ImGui::SetClipboardText(buff);
 	}
 }
 static bool SliderFloatNClickPrint(int components, const char* id, MIDIState* curr, MIDIState* prev, const int* knobs, float* v, float* v_defaults, float v_min, float v_max, const char* format, float power) {	
@@ -176,7 +176,7 @@ static bool ColorEditN(int components, const char* id, MIDIState* curr, MIDIStat
 	/* If we are editing in HSV and it's not the native format, convert into that first. */
 	bool convert_to_hsv = (flags & ImGuiColorEditFlags_DisplayHSV) && !(flags & ImGuiColorEditFlags_InputHSV);
 	if (convert_to_hsv)
-		gui::ColorConvertRGBtoHSV(v[0], v[1], v[2], edit[0], edit[1], edit[2]);
+		ImGui::ColorConvertRGBtoHSV(v[0], v[1], v[2], edit[0], edit[1], edit[2]);
 	/* Perform the editing operation. */
 	for (int i = 0; i < components; ++i) {
 		int del = curr->value[knobs[i]] - prev->value[knobs[i]];
@@ -196,7 +196,7 @@ static bool ColorEditN(int components, const char* id, MIDIState* curr, MIDIStat
 	}
 	/* Convert back to RGB if we converted to HSV earlier. */
 	if (convert_to_hsv) {
-		gui::ColorConvertHSVtoRGB(edit[0], edit[1], edit[2], v[0], v[1], v[2]);
+		ImGui::ColorConvertHSVtoRGB(edit[0], edit[1], edit[2], v[0], v[1], v[2]);
 		v[3] = edit[3];
 	}
 	else {
@@ -215,9 +215,9 @@ static bool ColorEditN(int components, const char* id, MIDIState* curr, MIDIStat
 	}
 
 	if (components == 3)
-		return gui::ColorEdit3(id, v, flags) || touched;
+		return ImGui::ColorEdit3(id, v, flags) || touched;
 	else if (components == 4)
-		return gui::ColorEdit4(id, v, flags) || touched;
+		return ImGui::ColorEdit4(id, v, flags) || touched;
 	else {
 		assert(false);
 		return false;
