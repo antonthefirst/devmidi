@@ -1,5 +1,5 @@
 # devmidi
-A simple MIDI input wrapper that dovetails nicely into Dear ImGui.
+A simple MIDI input wrapper that dovetails nicely into [Dear ImGui](https://github.com/ocornut/imgui).
 It currently supports the two controllers I've found most useful in my own personal work:
 * [Midi Fighter Twister](https://www.midifighter.com/#Twister) for knobs
 * [Midi Fighter 3D](https://www.midifighter.com/#3D) for buttons
@@ -33,7 +33,7 @@ This is meant to be a simple 'drop in' library, specifically for developer MIDI 
 
 ## Usage
 The header should be pretty self explanatory. Functions with a 'twister' prefix use the Midi Fighter Twister knobs, and those with the 'fighter' prefix use the Midi Fighter 3D buttons. Some cool things to call out though:
-* Clicking the knob will copy the value to clipboard. This is handy when you just want to quickly bind a knob to some magic constant to tune it, and then copy paste the result back into code. The click will also print to console, if you supplied a print function in **devmidi_custom.h**.
+* When using the basic 'twisterSliderFloat', clicking the knob will copy the value to clipboard. This is handy when you just want to quickly bind a knob to some magic constant to tune it, and then copy paste the result back into code. The click will also print to console, if you supplied a print function in **devmidi_custom.h**.
 * Use `twisterSliderClickDefault` to set a value to a provided default when the knob is clicked.
 * Use `twisterSliderClickToggle` to quickly jump between the provided min and max values (in addition to tuning between them).
 * Use `twisterColorEdit` to edit colors. In HSV mode, the hue will wrap. 
