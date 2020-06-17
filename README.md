@@ -8,6 +8,7 @@ It's easy to hack it to add your own.
 
 The lib currently lets you do the following:
 * Bind float values to knobs and ImGui sliders simultaneously.
+* Click the knobs for various convenient behavior like resetting to a default, printing, toggling.
 * Bind buttons to ImGui buttons, checkboxes, and radio buttons.
 * Read the raw data of the devices in a simple way.
 
