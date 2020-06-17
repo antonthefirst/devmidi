@@ -6,6 +6,11 @@ It currently supports the two controllers I've found most useful in my own perso
 
 It's easy to hack it to add your own.
 
+The lib currently lets you do the following:
+* Bind float values to knobs and ImGui sliders simultaneously.
+* Bind buttons to ImGui buttons, checkboxes, and radio buttons.
+* Read the raw data of the devices in a simple way.
+
 ## Motivation
 I've found it very handy to use MIDI controllers for various tuning and debugging tasks during development:
 * Color Grading - keep your eyes on the screen while tuning multiple parameters, without looking over at sliders or hunting with a mouse.
@@ -27,17 +32,21 @@ This is meant to be a simple 'drop in' library, specifically for developer MIDI 
 
 ## Usage
 The header should be pretty self explanatory. Functions with a 'twister' prefix use the Midi Fighter Twister knobs, and those with the 'fighter' prefix use the Midi Fighter 3D buttons. Some cool things to call out though:
-* Clicking the knob will copy the value to clipboard and also print it to console (if you supplied a print function in **devmidi_custom.h**).
+* Clicking the knob will copy the value to clipboard. This is handy when you just want to quickly bind a knob to some magic constant to tune it, and then copy paste the result back into code. The click will also print to console, if you supplied a print function in **devmidi_custom.h**.
 * Use `twisterSliderClickDefault` to set a value to a provided default when the knob is clicked.
 * Use `twisterSliderClickToggle` to quickly jump between the provided min and max values (in addition to tuning between them).
 * Use `twisterColorEdit` to edit colors. In HSV mode, the hue will wrap. 
 * Use `fighterRadioButton` with multiple buttons to quickly toggle options.
 * Use `fighterCheckboxMomentary` to enable a checkbox only when a button is held down. Useful for momentarily turning on a visualization to quickly check for problems, rather than toggling it on permanently.
 
-## "Architecture"
+## "Architecture" (it's just some functions really)
 The library is actually in two pieces: the device specific API that is **devmidi.h/cpp**, and the underlying device agnostic **midi_wrap.h/cpp which** just listens on the devices and wrangles the output into a convenient format. Right now, it only listens for Continuous Controller and Note messages, since that's what I've found to be useful. This breakdown abstracts the bits of MIDI that I care about and makes it easier to add binds for new devices.
 The devmidi layer is meant to be hacked on so you can quickly add your own particular device and functionality.
 **devmidi_custom.h** is the place to provide your own print function for values, and also to define convenience wrappers for your own app specific vector structs (like vec3, float4, color3 that sort of thing).
+
+## Building
+It should 'just work' if you drop it into a Visual Studio project. You might have to adjust the path to your ImGui in the code, but that's probably it.
+Right now, **midi_wrap** is Windows only, so while **devmidi** is platform agnostic, the whole thing only works on Windows. Presumably it shouldn't be hard to add Mac/Linux support to **midi_wrap**, since the MIDI protocol is the same, it's just the OS calls that need to change (and on Windows at least, it's like a half dozen API calls). I don't plan to do this work since I don't have machines to test on, but if this seems useful to you and you want to do it, I'm happy to help in spirit and discussion of what needs doing :)
 
 ## Future Work
 * It would be cool to actually send color commands to the twister/fighter to reflect the app values.
